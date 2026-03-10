@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAD-Level Sci-Fi Two-Wheeled Car 3D Model</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* 1. 日落城市桥场景（基础环境） */
+        .scene {
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(
+                180deg, 
+                #ff9a76 0%,  /* 日落金橙 */
+                #ff6b95 20%, 
+                #4a47a3 60%, 
+                #1b263b 90%
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 2500px;  /* CAD级透视精度 */
+            perspective-origin: 45% 60%;
+            overflow: hidden;
+            position: relative;
+        }
+        /* 城市高楼背景（模糊景深） */
+        .scene::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, 
+                    rgba(27, 38, 59, 0.7) 0px, 
+                    rgba(27, 38, 59, 0.4) 100px, 
+                    rgba(27, 38, 59, 0.7) 200px
+                ),
+                repeating-linear-gradient(
+                    to right,
+                    transparent 0px,
+                    transparent 50px,
+                    rgba(255, 255, 255, 0.1) 50px,
+                    rgba(255, 255, 255, 0.1) 60px
+                );
+            background-size: 100% 100%, 400px 100%;
+            z-index: 0;
+            filter: blur(2px);  /* 浅景深模糊 */
+        }
+        /* 桥面（现代城市桥） */
+        .bridge {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(
+                180deg, 
+                #6b7280 0%, 
+                #4b5563 50%, 
+                #374151 100%
+            );
+            transform: rotateX(85deg) translateZ(-100px);
+            transform-style: preserve-3d;
+            box-shadow: 0 0 80px rgba(0,0,0,0.8);
+        }
+        /* 日落金色光效 */
+        .golden-light {
+            position: absolute;
+            top: 20%;
+            left: 30%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(
+                circle, 
+                rgba(255, 215, 0, 0.4) 0%, 
+                transparent 70%
+            );
+            border-radius: 50%;
+            filter: blur(60px);
+            z-index: 1;
+        }
+
+        /* 2. 汽车3D核心容器（CAD级空间定位） */
+        .car {
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotate360 40s infinite linear;  /* 慢速旋转展示细节 */
+            z-index: 2;
+            transform: rotateX(12deg) rotateY(15deg) translateY(30px);
+        }
+
+        /* 3. 车身主体（拉丝金属银+黑色气动组件） */
+        .car-body {
+            position: relative;
+            width: 520px;
+            height: 210px;
+            transform-style: preserve-3d;
+        }
+        /* 车身正面（拉丝金属银） */
+        .body-front {
+            position: absolute;
+            width: 520px;
+            height: 210px;
+            background: 
+                linear-gradient(135deg, #b8c2cc 0%, #8e9eab 50%, #6c757d 100%),
+                repeating-linear-gradient(
+                    45deg,
+                    rgba(0,0,0,0.05) 0px,
+                    rgba(0,0,0,0.05) 2px,
+                    transparent 2px,
+                    transparent 10px
+                );  /* 拉丝纹理 */
+            border-radius: 140px 240px 40px 40px;
+            transform: translateZ(70px);  /* 车身厚度70px */
+            box-shadow: 
+                inset 0 0 60px rgba(0,0,0,0.6),
+                0 20px 50px rgba(0,0,0,0.8),
+                0 0 40px rgba(255, 215, 0, 0.1);  /* 金色反光 */
+            border: 2px solid rgba(255,255,255,0.15);
+        }
+        /* 车身背面（黑色气动组件） */
+        .body-back {
+            position: absolute;
+            width: 520px;
+            height: 210px;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-radius: 140px 240px 40px 40px;
+            transform: translateZ(-70px);
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.8);
+        }
+        /* 车身左侧面（气动过渡区） */
+        .body-left {
+            position: absolute;
+            width: 140px;
+            height: 210px;
+            background: linear-gradient(90deg, #1f2937 0%, #4b5563 100%);
+            left: 0;
+            transform: rotateY(90deg) translateZ(-70px);
+            border-radius: 40px 0 0 40px;
+        }
+        /* 车身右侧面（金属银） */
+        .body-right {
+            position: absolute;
+            width: 140px;
+            height: 210px;
+            background: 
+                linear-gradient(90deg, #6c757d 0%, #8e9eab 100%),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0, rgba(0,0,0,0.05) 2px, transparent 2px, transparent 10px);
+            right: 0;
+            transform: rotateY(90deg) translateZ(450px);  /* 520-70=450 */
+            border-radius: 0 40px 40px 0;
+        }
+        /* 车身上顶面（气动弧线） */
+        .body-top {
+            position: absolute;
+            width: 520px;
+            height: 140px;
+            background: linear-gradient(180deg, #8e9eab 0%, #6c757d 100%);
+            top: 0;
+            transform: rotateX(90deg) translateZ(105px);  /* 210/2=105 */
+            border-radius: 140px 240px 0 0;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.4);
+        }
+
+        /* 4. 透明气泡穹顶（CAD级厚度+光学效果） */
+        .canopy {
+            position: absolute;
+            top: -150px;
+            left: 70px;
+            width: 380px;
+            height: 180px;
+            transform-style: preserve-3d;
+        }
+        /* 穹顶正面（高透玻璃+反光） */
+        .canopy-front {
+            position: absolute;
+            width: 380px;
+            height: 180px;
+            background: 
+                rgba(255,255,255,0.08),
+                radial-gradient(circle at 70% 30%, rgba(255,215,0,0.2) 0%, transparent 40%);  /* 日落反光 */
+            border: 10px solid rgba(255,255,255,0.3);
+            border-radius: 120px 200px 0 0;
+            transform: translateZ(20px);  /* 穹顶厚度20px */
+            box-shadow: 
+                inset 0 0 40px rgba(255,255,255,0.15),
+                0 0 30px rgba(255,215,0,0.08);
+            backdrop-filter: blur(1px);
+        }
+        /* 穹顶背面（玻璃厚度） */
+        .canopy-back {
+            position: absolute;
+            width: 380px;
+            height: 180px;
+            background: rgba(255,255,255,0.03);
+            border: 10px solid rgba(255,255,255,0.2);
+            border-radius: 120px 200px 0 0;
+            transform: translateZ(-20px);
+        }
+
+        /* 5. 车轮系统（后轮轮毂电机+前轮碟刹） */
+        .wheel {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            transform-style: preserve-3d;
+            z-index: 1;
+        }
+        /* 后轮（轮毂电机） */
+        .wheel-rear {
+            bottom: -70px;
+            left: 30px;
+            transform: rotateX(78deg);
+        }
+        /* 后轮电机核心（黑色金属） */
+        .hub-motor {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #111827 0%, #374151 50%, #111827 100%);
+            transform: translateZ(15px);  /* 电机厚度15px */
+            box-shadow: 
+                inset 0 0 40px rgba(0,0,0,0.8),
+                0 12px 30px rgba(0,0,0,0.9);
+            border: 4px solid #4b5563;
+        }
+        /* 轮毂电机散热纹 */
+        .hub-motor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #1f2937;
+            border: 5px solid #374151;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+        }
+        .hub-motor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 5px;
+            background: #374151;
+            box-shadow: 
+                0 30px 0 #374151, 0 -30px 0 #374151,
+                30px 0 0 #374151, -30px 0 0 #374151,
+                21px 21px 0 #374151, -21px -21px 0 #374151,
+                21px -21px 0 #374151, -21px 21px 0 #374151;
+            border-radius: 3px;
+        }
+        /* 后轮厚度面 */
+        .wheel-rear-back {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #111827;
+            transform: translateZ(-15px);
+            border: 4px solid #1f2937;
+        }
+
+        /* 前轮（碟刹系统） */
+        .wheel-front {
+            bottom: -70px;
+            right: 30px;
+            transform: rotateX(78deg);
+        }
+        /* 前轮轮胎 */
+        .front-tire {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            transform: translateZ(15px);
+            box-shadow: 
+                inset 0 0 40px rgba(0,0,0,0.8),
+                0 12px 30px rgba(0,0,0,0.9);
+            border: 4px solid #374151;
+        }
+        /* 碟刹盘（CAD级细节） */
+        .disc-brake {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateZ(15deg);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: 
+                linear-gradient(90deg, #6c757d 0%, #9ca3af 50%, #6c757d 100%),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 8px);  /* 刹车盘纹理 */
+            border: 2px solid #4b5563;
+            box-shadow: 0 0 15px rgba(0,0,0,0.7);
+            z-index: 2;
+        }
+        /* 刹车卡钳 */
+        .brake-caliper {
+            position: absolute;
+            top: 35%;
+            left: 60%;
+            transform: translate(-50%, -50%) rotateZ(15deg);
+            width: 20px;
+            height: 30px;
+            background: linear-gradient(90deg, #dc2626 0%, #991b1b 100%);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+            z-index: 3;
+        }
+        /* 前轮厚度面 */
+        .wheel-front-back {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #111827;
+            transform: translateZ(-15px);
+            border: 4px solid #1f2937;
+        }
+
+        /* 6. 内饰（4座+悬浮显示屏+极简方向盘） */
+        .interior {
+            position: absolute;
+            width: 380px;
+            height: 120px;
+            top: 30px;
+            left: 70px;
+            transform-style: preserve-3d;
+            transform: translateZ(75px) rotateX(12deg);  /* 嵌入车身 */
+        }
+        /* 座椅（4座：2前+2后，人体工学） */
+        .seat {
+            position: absolute;
+            width: 50px;
+            height: 80px;
+            transform-style: preserve-3d;
+            background: linear-gradient(180deg, #1f2937 0%, #374151 100%);
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.7);
+        }
+        /* 前排座椅 */
+        .seat-front-1 { top: 10px; left: 80px; transform: translateZ(10px); }
+        .seat-front-2 { top: 10px; left: 180px; transform: translateZ(10px); }
+        /* 后排座椅 */
+        .seat-rear-1 { top: 10px; left: 240px; transform: translateZ(5px); }
+        .seat-rear-2 { top: 10px; left: 300px; transform: translateZ(5px); }
+        /* 座椅头枕 */
+        .seat::after {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 8px;
+            width: 34px;
+            height: 25px;
+            background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+            border-radius: 8px;
+            box-shadow: 0 5px 8px rgba(0,0,0,0.5);
+        }
+        /* 极简方向盘 */
+        .steering-wheel {
+            position: absolute;
+            top: 20px;
+            left: 50px;
+            width: 35px;
+            height: 35px;
+            border: 6px solid #1f2937;
+            border-radius: 50%;
+            transform: translateZ(12px) rotateZ(-20deg);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.6);
+        }
+        /* 悬浮数字显示屏 */
+        .floating-display {
+            position: absolute;
+            top: 0;
+            left: 120px;
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            border-radius: 8px;
+            transform: translateZ(15px) rotateX(5deg);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.6);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        /* 显示屏发光纹理 */
+        .floating-display::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            width: 50px;
+            height: 20px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+            border-radius: 4px;
+        }
+
+        /* 7. 360度旋转动画（展示CAD级细节） */
+        @keyframes rotate360 {
+            0% { transform: rotateX(12deg) rotateY(15deg) translateY(30px); }
+            100% { transform: rotateX(12deg) rotateY(375deg) translateY(30px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 单层HTML结构：所有CAD级3D部件嵌套 -->
+    <div class="scene">
+        <!-- 日落光效 -->
+        <div class="golden-light"></div>
+        <!-- 桥面 -->
+        <div class="bridge"></div>
+        
+        <!-- 汽车3D核心 -->
+        <div class="car">
+            <!-- 车身主体 -->
+            <div class="car-body">
+                <div class="body-front"></div>
+                <div class="body-back"></div>
+                <div class="body-left"></div>
+                <div class="body-right"></div>
+                <div class="body-top"></div>
+
+                <!-- 透明气泡穹顶 -->
+                <div class="canopy">
+                    <div class="canopy-front"></div>
+                    <div class="canopy-back"></div>
+                </div>
+
+                <!-- 内饰系统 -->
+                <div class="interior">
+                    <div class="seat seat-front-1"></div>
+                    <div class="seat seat-front-2"></div>
+                    <div class="seat seat-rear-1"></div>
+                    <div class="seat seat-rear-2"></div>
+                    <div class="steering-wheel"></div>
+                    <div class="floating-display"></div>
+                </div>
+            </div>
+
+            <!-- 后轮（轮毂电机） -->
+            <div class="wheel wheel-rear">
+                <div class="hub-motor"></div>
+                <div class="wheel-rear-back"></div>
+            </div>
+
+            <!-- 前轮（碟刹） -->
+            <div class="wheel wheel-front">
+                <div class="front-tire"></div>
+                <div class="disc-brake"></div>
+                <div class="brake-caliper"></div>
+                <div class="wheel-front-back"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
