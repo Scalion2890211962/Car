@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布莱克-斯科尔斯模型 - 金融知识问答</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        
+        .formula-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .formula {
+            font-size: 18px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        
+        .info-box {
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        
+        .info-box h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .question-box {
+            margin: 25px 0;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .question {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .option:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .option.correct {
+            background: rgba(76, 175, 80, 0.5);
+            border-color: #4CAF50;
+        }
+        
+        .option.wrong {
+            background: rgba(244, 67, 54, 0.5);
+            border-color: #F44336;
+        }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #4CAF50;
+            display: block;
+        }
+        
+        .feedback.wrong {
+            background: #F44336;
+            display: block;
+        }
+        
+        .score-box {
+            text-align: center;
+            font-size: 20px;
+            margin: 20px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        
+        .next-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 0 auto;
+            display: block;
+            transition: background 0.3s ease;
+        }
+        
+        .next-btn:hover {
+            background: #45a049;
+        }
+        
+        .result-box {
+            text-align: center;
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .result-box h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .result-box p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="title">布莱克-斯科尔斯模型 (Black-Scholes Model)</div>
+        
+        <div class="formula-box">
+            <div class="formula">
+                ½σ²S²∂²V/∂S² + rS∂V/∂S + ∂V/∂t − rV = 0
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <h3>基本信息</h3>
+            <p><strong>提出时间：</strong>1973年（公式版本），1990年完善</p>
+            <p><strong>发现者：</strong>费舍尔·布莱克（Fischer Black）、迈伦·斯科尔斯（Myron Scholes）</p>
+            <p><strong>核心影响：</strong>现代金融工程的基石，用于期权定价和风险管理，推动了衍生品市场的爆炸式增长（尽管2008年金融危机也暴露了其局限性）</p>
+        </div>
+        
+        <div class="score-box">
+            得分：<span id="score">0</span>/3
+        </div>
+        
+        <!-- 问题1 -->
+        <div class="question-box" id="q1">
+            <div class="question">1. 布莱克-斯科尔斯模型的首次公式版本发布于哪一年？</div>
+            <div class="options">
+                <div class="option" onclick="checkAnswer(1, this, 'correct')">1973年</div>
+                <div class="option" onclick="checkAnswer(1, this, 'wrong')">1990年</div>
+                <div class="option" onclick="checkAnswer(1, this, 'wrong')">2008年</div>
+            </div>
+            <div class="feedback correct">正确！布莱克-斯科尔斯模型的公式版本首次发布于1973年</div>
+            <div class="feedback wrong">错误！正确答案是1973年，1990年是模型完善的时间</div>
+        </div>
+        
+        <!-- 问题2 -->
+        <div class="question-box" id="q2" style="display: none;">
+            <div class="question">2. 布莱克-斯科尔斯模型的主要应用领域是？</div>
+            <div class="options">
+                <div class="option" onclick="checkAnswer(2, this, 'wrong')">股票交易</div>
+                <div class="option" onclick="checkAnswer(2, this, 'correct')">期权定价和风险管理</div>
+                <div class="option" onclick="checkAnswer(2, this, 'wrong')">房地产估值</div>
+            </div>
+            <div class="feedback correct">正确！该模型是期权定价的核心工具</div>
+            <div class="feedback wrong">错误！正确答案是期权定价和风险管理</div>
+        </div>
+        
+        <!-- 问题3 -->
+        <div class="question-box" id="q3" style="display: none;">
+            <div class="question">3. 以下关于布莱克-斯科尔斯模型的描述，哪项是正确的？</div>
+            <div class="options">
+                <div class="option" onclick="checkAnswer(3, this, 'wrong')">模型无任何局限性，适用于所有金融场景</div>
+                <div class="option" onclick="checkAnswer(3, this, 'wrong')">仅由迈伦·斯科尔斯一人独立提出</div>
+                <div class="option" onclick="checkAnswer(3, this, 'correct')">2008年金融危机暴露了其局限性</div>
+            </div>
+            <div class="feedback correct">正确！2008年金融危机暴露了该模型在极端市场条件下的局限性</div>
+            <div class="feedback wrong">错误！正确答案是2008年金融危机暴露了其局限性</div>
+        </div>
+        
+        <!-- 结果展示 -->
+        <div class="result-box" id="result">
+            <h2>游戏结束！</h2>
+            <p>你的最终得分：<span id="final-score">0</span>/3</p>
+            <p id="result-text"></p>
+        </div>
+        
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">下一题</button>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let score = 0;
+        
+        // 检查答案
+        function checkAnswer(questionNum, option, result) {
+            // 禁用当前问题的所有选项
+            const options = document.querySelectorAll(`#q${questionNum} .option`);
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            // 标记正确/错误选项
+            option.classList.add(result);
+            
+            // 显示反馈
+            const feedback = document.querySelectorAll(`#q${questionNum} .feedback`);
+            feedback.forEach(feed => {
+                if (feed.classList.contains(result)) {
+                    feed.style.display = 'block';
+                }
+            });
+            
+            // 更新得分
+            if (result === 'correct') {
+                score++;
+                document.getElementById('score').textContent = score;
+            }
+            
+            // 显示下一题按钮
+            document.getElementById('next-btn').style.display = 'block';
+        }
+        
+        // 切换到下一题
+        function nextQuestion() {
+            // 隐藏当前问题
+            document.getElementById(`q${currentQuestion}`).style.display = 'none';
+            
+            // 增加题数
+            currentQuestion++;
+            
+            // 如果还有下一题，显示
+            if (currentQuestion <= 3) {
+                document.getElementById(`q${currentQuestion}`).style.display = 'block';
+                document.getElementById('next-btn').style.display = 'none';
+            } else {
+                // 显示结果
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('final-score').textContent = score;
+                document.getElementById('next-btn').style.display = 'none';
+                
+                // 根据得分显示不同结果文本
+                let resultText = '';
+                if (score === 3) {
+                    resultText = '太棒了！你对布莱克-斯科尔斯模型了如指掌！';
+                } else if (score === 2) {
+                    resultText = '不错哦！你对布莱克-斯科尔斯模型有较好的了解。';
+                } else if (score === 1) {
+                    resultText = '还需努力！再了解一下布莱克-斯科尔斯模型吧。';
+                } else {
+                    resultText = '加油！重新学习一下布莱克-斯科尔斯模型的基础知识吧。';
+                }
+                document.getElementById('result-text').textContent = resultText;
+            }
+        }
+        
+        // 初始化隐藏下一题按钮
+        document.getElementById('next-btn').style.display = 'none';
+    </script>
+</body>
+</html>
