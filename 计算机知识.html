@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算机核心基础知识点 | H5动画展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft Yahei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            min-height: 100vh;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #4cc9f0, #72efdd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            color: #a8dadc;
+            font-size: 1.1rem;
+        }
+
+        /* 知识点卡片容器 */
+        .knowledge-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 知识点卡片样式 */
+        .knowledge-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.8rem;
+            border: 1px solid rgba(76, 201, 240, 0.2);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: cardFadeIn 0.6s ease forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 每个卡片延迟动画 */
+        .knowledge-card:nth-child(1) { animation-delay: 0.1s; }
+        .knowledge-card:nth-child(2) { animation-delay: 0.2s; }
+        .knowledge-card:nth-child(3) { animation-delay: 0.3s; }
+        .knowledge-card:nth-child(4) { animation-delay: 0.4s; }
+        .knowledge-card:nth-child(5) { animation-delay: 0.5s; }
+        .knowledge-card:nth-child(6) { animation-delay: 0.6s; }
+        .knowledge-card:nth-child(7) { animation-delay: 0.7s; }
+        .knowledge-card:nth-child(8) { animation-delay: 0.8s; }
+        .knowledge-card:nth-child(9) { animation-delay: 0.9s; }
+        .knowledge-card:nth-child(10) { animation-delay: 1.0s; }
+        .knowledge-card:nth-child(11) { animation-delay: 1.1s; }
+        .knowledge-card:nth-child(12) { animation-delay: 1.2s; }
+        .knowledge-card:nth-child(13) { animation-delay: 1.3s; }
+        .knowledge-card:nth-child(14) { animation-delay: 1.4s; }
+        .knowledge-card:nth-child(15) { animation-delay: 1.5s; }
+        .knowledge-card:nth-child(16) { animation-delay: 1.6s; }
+        .knowledge-card:nth-child(17) { animation-delay: 1.7s; }
+        .knowledge-card:nth-child(18) { animation-delay: 1.8s; }
+        .knowledge-card:nth-child(19) { animation-delay: 1.9s; }
+        .knowledge-card:nth-child(20) { animation-delay: 2.0s; }
+
+        /* 卡片hover效果 */
+        .knowledge-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: #4cc9f0;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* 卡片序号 */
+        .card-number {
+            position: absolute;
+            top: 1.2rem;
+            right: 1.8rem;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: rgba(76, 201, 240, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .knowledge-card:hover .card-number {
+            color: rgba(76, 201, 240, 0.8);
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        /* 卡片标题 */
+        .card-title {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #4cc9f0;
+            border-left: 4px solid #72efdd;
+            padding-left: 1rem;
+        }
+
+        /* 卡片内容 */
+        .card-content {
+            color: #f1faee;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* 分类标签 */
+        .card-tag {
+            position: absolute;
+            bottom: 1.2rem;
+            right: 1.8rem;
+            font-size: 0.8rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            background: rgba(114, 239, 221, 0.2);
+            color: #72efdd;
+            transition: all 0.3s ease;
+        }
+
+        .knowledge-card:hover .card-tag {
+            background: rgba(114, 239, 221, 0.5);
+        }
+
+        /* 动画定义 */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 滚动动画 */
+        @keyframes scrollIndicator {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
+        }
+
+        .scroll-indicator {
+            text-align: center;
+            margin-top: 2rem;
+            color: #a8dadc;
+            animation: scrollIndicator 2s ease infinite;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .knowledge-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .knowledge-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>计算机核心基础知识点</h1>
+        <p>20个核心概念，构建你的计算机知识体系</p>
+    </div>
+
+    <div class="knowledge-container">
+        <!-- 1. 二进制与进制转换 -->
+        <div class="knowledge-card">
+            <div class="card-number">01</div>
+            <h3 class="card-title">二进制与进制转换</h3>
+            <p class="card-content">计算机底层只有 0 和 1，所有数据、指令、存储都基于二进制。</p>
+            <span class="card-tag">基础原理</span>
+        </div>
+
+        <!-- 2. 计算机组成原理 -->
+        <div class="knowledge-card">
+            <div class="card-number">02</div>
+            <h3 class="card-title">计算机组成原理</h3>
+            <p class="card-content">CPU、内存、硬盘、主板、显卡、总线等硬件如何协同工作。</p>
+            <span class="card-tag">硬件基础</span>
+        </div>
+
+        <!-- 3. 操作系统（OS） -->
+        <div class="knowledge-card">
+            <div class="card-number">03</div>
+            <h3 class="card-title">操作系统（OS）</h3>
+            <p class="card-content">进程、线程、内存管理、文件系统、调度、死锁。</p>
+            <span class="card-tag">系统层</span>
+        </div>
+
+        <!-- 4. 数据结构 -->
+        <div class="knowledge-card">
+            <div class="card-number">04</div>
+            <h3 class="card-title">数据结构</h3>
+            <p class="card-content">数组、链表、栈、队列、树、哈希表、图。</p>
+            <span class="card-tag">编程基础</span>
+        </div>
+
+        <!-- 5. 算法基础 -->
+        <div class="knowledge-card">
+            <div class="card-number">05</div>
+            <h3 class="card-title">算法基础</h3>
+            <p class="card-content">排序、查找、递归、分治、贪心、动态规划思想。</p>
+            <span class="card-tag">编程基础</span>
+        </div>
+
+        <!-- 6. 计算机网络 -->
+        <div class="knowledge-card">
+            <div class="card-number">06</div>
+            <h3 class="card-title">计算机网络</h3>
+            <p class="card-content">TCP/IP、HTTP/HTTPS、DNS、IP 地址、端口、路由。</p>
+            <span class="card-tag">网络基础</span>
+        </div>
+
+        <!-- 7. 数据库基础 -->
+        <div class="knowledge-card">
+            <div class="card-number">07</div>
+            <h3 class="card-title">数据库基础</h3>
+            <p class="card-content">关系型数据库、SQL、索引、事务、主键 / 外键。</p>
+            <span class="card-tag">数据存储</span>
+        </div>
+
+        <!-- 8. 编程语言基础 -->
+        <div class="knowledge-card">
+            <div class="card-number">08</div>
+            <h3 class="card-title">编程语言基础</h3>
+            <p class="card-content">变量、类型、循环、条件、函数、面向对象。</p>
+            <span class="card-tag">编程基础</span>
+        </div>
+
+        <!-- 9. 编译 / 解释执行 -->
+        <div class="knowledge-card">
+            <div class="card-number">09</div>
+            <h3 class="card-title">编译 / 解释执行</h3>
+            <p class="card-content">代码如何变成机器能跑的指令（编译、链接、运行）。</p>
+            <span class="card-tag">基础原理</span>
+        </div>
+
+        <!-- 10. 内存与缓存 -->
+        <div class="knowledge-card">
+            <div class="card-number">10</div>
+            <h3 class="card-title">内存与缓存</h3>
+            <p class="card-content">RAM、ROM、Cache、虚拟内存、堆和栈。</p>
+            <span class="card-tag">硬件基础</span>
+        </div>
+
+        <!-- 11. 文件系统 -->
+        <div class="knowledge-card">
+            <div class="card-number">11</div>
+            <h3 class="card-title">文件系统</h3>
+            <p class="card-content">目录、权限、读写、磁盘块、inode 思想。</p>
+            <span class="card-tag">系统层</span>
+        </div>
+
+        <!-- 12. 网络协议分层 -->
+        <div class="knowledge-card">
+            <div class="card-number">12</div>
+            <h3 class="card-title">网络协议分层</h3>
+            <p class="card-content">应用层、传输层、网络层、链路层、物理层。</p>
+            <span class="card-tag">网络基础</span>
+        </div>
+
+        <!-- 13. 多线程与并发 -->
+        <div class="knowledge-card">
+            <div class="card-number">13</div>
+            <h3 class="card-title">多线程与并发</h3>
+            <p class="card-content">锁、同步、异步、并发安全、race condition。</p>
+            <span class="card-tag">编程基础</span>
+        </div>
+
+        <!-- 14. API 与接口 -->
+        <div class="knowledge-card">
+            <div class="card-number">14</div>
+            <h3 class="card-title">API 与接口</h3>
+            <p class="card-content">前后端交互、RESTful、JSON、请求 / 响应。</p>
+            <span class="card-tag">开发实践</span>
+        </div>
+
+        <!-- 15. 编码与字符集 -->
+        <div class="knowledge-card">
+            <div class="card-number">15</div>
+            <h3 class="card-title">编码与字符集</h3>
+            <p class="card-content">ASCII、Unicode、UTF-8、乱码原因。</p>
+            <span class="card-tag">基础原理</span>
+        </div>
+
+        <!-- 16. 异常与错误处理 -->
+        <div class="knowledge-card">
+            <div class="card-number">16</div>
+            <h3 class="card-title">异常与错误处理</h3>
+            <p class="card-content">bug、崩溃、日志、调试思路。</p>
+            <span class="card-tag">开发实践</span>
+        </div>
+
+        <!-- 17. 版本控制 Git -->
+        <div class="knowledge-card">
+            <div class="card-number">17</div>
+            <h3 class="card-title">版本控制 Git</h3>
+            <p class="card-content">提交、分支、合并、冲突解决，现代开发必备。</p>
+            <span class="card-tag">开发工具</span>
+        </div>
+
+        <!-- 18. 信息安全基础 -->
+        <div class="knowledge-card">
+            <div class="card-number">18</div>
+            <h3 class="card-title">信息安全基础</h3>
+            <p class="card-content">加密、哈希、口令、防火墙、XSS、CSRF 常识。</p>
+            <span class="card-tag">安全基础</span>
+        </div>
+
+        <!-- 19. 云与分布式 -->
+        <div class="knowledge-card">
+            <div class="card-number">19</div>
+            <h3 class="card-title">云与分布式</h3>
+            <p class="card-content">服务器、虚拟机、容器、微服务概念。</p>
+            <span class="card-tag">架构基础</span>
+        </div>
+
+        <!-- 20. 计算机思维 -->
+        <div class="knowledge-card">
+            <div class="card-number">20</div>
+            <h3 class="card-title">计算机思维</h3>
+            <p class="card-content">抽象、分解、模式识别、算法化解决问题。</p>
+            <span class="card-tag">核心思维</span>
+        </div>
+    </div>
+
+    <div class="scroll-indicator">
+        <p>↓ 滚动查看更多 ↓</p>
+    </div>
+
+    <script>
+        // 监听滚动，添加额外的交互效果
+        window.addEventListener('scroll', function() {
+            const cards = document.querySelectorAll('.knowledge-card');
+            const scrollPosition = window.scrollY + window.innerHeight;
+
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top + window.scrollY;
+                if (scrollPosition > cardTop + 100) {
+                    card.style.transform = 'translateY(0)';
+                    card.style.opacity = '1';
+                }
+            });
+        });
+
+        // 页面加载完成后触发初始动画
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+    </script>
+</body>
+</html>
