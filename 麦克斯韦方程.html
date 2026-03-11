@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>麦克斯韦方程组 - 科学里程碑</title>
+    <!-- 引入MathJax用于渲染数学公式 -->
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 1rem;
+        }
+        .equation-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .equation-title {
+            font-size: 1.2rem;
+            color: #34495e;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .math-equation {
+            font-size: 1.3rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .info-section {
+            margin: 2rem 0;
+        }
+        .info-item {
+            margin: 1rem 0;
+            font-size: 1.1rem;
+        }
+        .info-item strong {
+            color: #2980b9;
+            width: 120px;
+            display: inline-block;
+        }
+        .impact-text {
+            color: #27ae60;
+            font-style: italic;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+            .math-equation {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>麦克斯韦方程组 (Maxwell's Equations)</h1>
+        
+        <div class="equation-section">
+            <div class="equation-title">数学表达式：</div>
+            <div class="math-equation">
+                \(\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0}\)
+            </div>
+            <div class="math-equation">
+                \(\nabla \cdot \mathbf{B} = 0\)
+            </div>
+            <div class="math-equation">
+                \(\nabla \times \mathbf{E} = -\frac{\partial \mathbf{B}}{\partial t}\)
+            </div>
+            <div class="math-equation">
+                \(\nabla \times \mathbf{B} = \mu_0 \mathbf{J} + \mu_0 \varepsilon_0 \frac{\partial \mathbf{E}}{\partial t}\)
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-item">
+                <strong>提出时代：</strong> 1865年
+            </div>
+            <div class="info-item">
+                <strong>发现者：</strong> 詹姆斯·克拉克·麦克斯韦（James Clerk Maxwell）
+            </div>
+            <div class="info-item">
+                <strong>核心影响：</strong> 
+                <span class="impact-text">
+                    统一了电、磁和光，预言了电磁波的存在，直接催生了无线电、雷达、电视、手机和现代通信技术
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MathJax配置 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+</body>
+</html>
