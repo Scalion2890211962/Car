@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大数据核心运维知识 - 动画版</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Microsoft YaHei", sans-serif;
+}
+
+body {
+  background: #0b1220;
+  color: #e6edf3;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin: 20px 0 40px;
+  color: #4fc9e0;
+  opacity: 0;
+  animation: fadeIn 1s forwards 0.3s;
+}
+
+.card {
+  background: #131b2d;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  border-left: 4px solid #4fc9e0;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUp 0.7s ease-out forwards;
+}
+
+.card:nth-child(2) { animation-delay: 0.4s; }
+.card:nth-child(3) { animation-delay: 0.6s; }
+.card:nth-child(4) { animation-delay: 0.8s; }
+.card:nth-child(5) { animation-delay: 1.0s; }
+.card:nth-child(6) { animation-delay: 1.2s; }
+.card:nth-child(7) { animation-delay: 1.4s; }
+.card:nth-child(8) { animation-delay: 1.6s; }
+.card:nth-child(9) { animation-delay: 1.8s; }
+.card:nth-child(10) { animation-delay: 2.0s; }
+.card:nth-child(11) { animation-delay: 2.2s; }
+
+h2 {
+  font-size: 18px;
+  color: #61dafb;
+  margin-bottom: 12px;
+}
+
+ul {
+  list-style: none;
+}
+
+li {
+  margin: 6px 0;
+  line-height: 1.6;
+  position: relative;
+  padding-left: 16px;
+}
+
+li::before {
+  content: "▸";
+  color: #4fc9e0;
+  position: absolute;
+  left: 0;
+}
+
+code {
+  color: #f9d166;
+  background: #1e2636;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h1>大数据核心运维知识（H5动画版）</h1>
+
+  <div class="card">
+    <h2>一、基础概念</h2>
+    <ul>
+      <li><strong>大数据运维</strong>：保障集群稳定、高效、安全，负责部署、监控、调优、故障、扩容、备份。</li>
+      <li><strong>核心组件</strong>：Hadoop、HDFS、YARN、HBase、Hive、Kafka、Spark、Flink、ZooKeeper。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>二、HDFS 运维要点</h2>
+    <ul>
+      <li>角色：NameNode（元数据）、DataNode（数据）、SecondaryNameNode（checkpoint）</li>
+      <li>指标：磁盘使用率、副本数、块丢失、读写延迟</li>
+      <li>命令：<code>hdfs dfsadmin -report</code>、<code>hdfs dfsadmin -safemode</code></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>三、YARN 运维要点</h2>
+    <ul>
+      <li>角色：ResourceManager、NodeManager</li>
+      <li>负责：资源调度、任务运行</li>
+      <li>关注：内存/CPU、容器异常、队列、任务卡死</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>四、HBase 运维要点</h2>
+    <ul>
+      <li>依赖：HDFS + ZooKeeper</li>
+      <li>关注：Region 分布、读写、GC、Compaction、Split</li>
+      <li>操作：预分区、合并、快照、修复、rowkey 优化</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>五、Kafka 运维要点</h2>
+    <ul>
+      <li>角色：Broker、Producer、Consumer、Topic、Partition、Replica</li>
+      <li>关注：消息堆积、副本同步、磁盘IO、网络、offset</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>六、Spark / Flink 运维要点</h2>
+    <ul>
+      <li>Spark：Executor 内存、GC、Shuffle、日志</li>
+      <li>Flink：Checkpoint、Savepoint、背压、状态大小、重启策略</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>七、ZooKeeper 运维要点</h2>
+    <ul>
+      <li>作用：分布式协调、选主、元数据存储</li>
+      <li>关注：节点状态、连接数、znode、磁盘、心跳</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>八、监控与告警</h2>
+    <ul>
+      <li>监控：CPU、内存、磁盘、网络、服务状态、JVM、GC、队列、延迟</li>
+      <li>工具：Grafana、Prometheus、Zabbix、ELK</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>九、安全与权限</h2>
+    <ul>
+      <li>认证：Kerberos</li>
+      <li>权限：HDFS 权限、Ranger/Sentry</li>
+      <li>数据：脱敏、加密、审计日志</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>十、日常运维流程</h2>
+    <ul>
+      <li>1. 集群巡检　2. 日志排查　3. 性能调优</li>
+      <li>4. 故障处理　5. 备份恢复　6. 升级/扩容/缩容</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
