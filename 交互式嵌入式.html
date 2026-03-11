@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARM Cortex-M 底层原理可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Consolas", "Microsoft Yahei", sans-serif;
+        }
+        
+        body {
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            color: #2196F3;
+            border-bottom: 3px solid #2196F3;
+        }
+        
+        .content {
+            display: none;
+        }
+        
+        .content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+            padding-left: 10px;
+        }
+        
+        h3 {
+            color: #444;
+            margin: 15px 0;
+        }
+        
+        .register-panel {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .register-group {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        
+        .register {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .register-name {
+            font-weight: bold;
+            color: #2196F3;
+            margin-bottom: 5px;
+        }
+        
+        .register-value {
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .led {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ccc;
+            margin: 20px 0;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            transition: background 0.3s ease;
+        }
+        
+        .led.on {
+            background: #ff4444;
+            box-shadow: 0 0 20px #ff4444;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .btn:hover {
+            background: #1976D2;
+        }
+        
+        .memory-map {
+            margin: 20px 0;
+            position: relative;
+            height: 300px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .memory-region {
+            position: absolute;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            padding: 0 10px;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+        
+        .text-region {
+            left: 50px;
+            top: 50px;
+            width: 200px;
+            background: #9E9E9E;
+        }
+        
+        .data-region {
+            left: 300px;
+            top: 50px;
+            width: 100px;
+            background: #2196F3;
+        }
+        
+        .bss-region {
+            left: 450px;
+            top: 50px;
+            width: 150px;
+            background: #4CAF50;
+        }
+        
+        .flash-label {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .ram-label {
+            position: absolute;
+            left: 20px;
+            top: 120px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .timeline {
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            height: 100%;
+            width: 4px;
+            background: #2196F3;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin: 20px 0 20px 50px;
+            padding: 15px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #2196F3;
+            box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.2);
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: "Consolas", monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .bit-band-demo {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #f9f9f9;
+        }
+        
+        .highlight {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ARM Cortex-M 底层原理可视化</h1>
+        
+        <div class="tabs">
+            <div class="tab active" data-tab="gpio">1. GPIO寄存器操作</div>
+            <div class="tab" data-tab="bitband">2. 位带操作</div>
+            <div class="tab" data-tab="boot">3. 启动流程</div>
+        </div>
+        
+        <!-- GPIO寄存器操作面板 -->
+        <div class="content active" id="gpio">
+            <h2>GPIO寄存器级控制（STM32F103 PA5 LED）</h2>
+            
+            <div class="register-panel">
+                <div class="register-group">
+                    <h3>核心寄存器</h3>
+                    <div class="register">
+                        <div class="register-name">RCC_APB2ENR (时钟使能寄存器)</div>
+                        <div class="register-value" id="rcc-value">0x00000000 <span class="highlight">(未使能GPIOA)</span></div>
+                    </div>
+                    <div class="register">
+                        <div class="register-name">GPIOA_CRL (模式寄存器)</div>
+                        <div class="register-value" id="crl-value">0x44444444 <span class="highlight">(默认输入模式)</span></div>
+                    </div>
+                    <div class="register">
+                        <div class="register-name">GPIOA_BSRR (置位/复位寄存器)</div>
+                        <div class="register-value" id="bsrr-value">0x00000000</div>
+                    </div>
+                </div>
+                
+                <div class="register-group">
+                    <h3>LED状态</h3>
+                    <div class="led" id="led"></div>
+                    <button class="btn" onclick="initGPIO()">初始化GPIO</button>
+                    <button class="btn" onclick="ledOn()">LED点亮</button>
+                    <button class="btn" onclick="ledOff()">LED熄灭</button>
+                    <button class="btn" onclick="resetGPIO()">重置</button>
+                </div>
+            </div>
+            
+            <h3>核心代码示例</h3>
+            <div class="code-block">
+#define PERIPH_BASE        0x40000000UL<br>
+#define GPIOA_BASE         (PERIPH_BASE + 0x10800UL)<br>
+#define GPIOA_CRL         *(volatile uint32_t *)(GPIOA_BASE + 0x00UL)<br>
+#define GPIOA_BSRR        *(volatile uint32_t *)(GPIOA_BASE + 0x10UL)<br>
+#define RCC_APB2ENR       *(volatile uint32_t *)(0x40021000UL + 0x18UL)<br>
+<br>
+// 初始化PA5为输出模式<br>
+void LED_Init(void) {<br>
+&nbsp;&nbsp;RCC_APB2ENR |= (1UL << 2);  // 使能GPIOA时钟<br>
+&nbsp;&nbsp;GPIOA_CRL &= ~(0xFUL << 20); // 清除PA5配置<br>
+&nbsp;&nbsp;GPIOA_CRL |= (0x3UL << 20);  // PA5推挽输出<br>
+}<br>
+<br>
+void LED_On(void) {<br>
+&nbsp;&nbsp;GPIOA_BSRR = (1UL << 5);  // 置位PA5<br>
+}<br>
+<br>
+void LED_Off(void) {<br>
+&nbsp;&nbsp;GPIOA_BSRR = (1UL << 21); // 复位PA5<br>
+}<br>
+            </div>
+            
+            <h3>关键知识点</h3>
+            <ul>
+                <li><strong>volatile关键字</strong>：确保编译器不优化寄存器读写操作</li>
+                <li><strong>BSRR寄存器</strong>：原子操作，避免中断导致的操作不完整</li>
+                <li><strong>时钟使能</strong>：外设默认关闭时钟，必须先使能才能操作</li>
+                <li><strong>模式配置</strong>：每个引脚占用4位，配置输入/输出模式</li>
+            </ul>
+        </div>
+        
+        <!-- 位带操作面板 -->
+        <div class="content" id="bitband">
+            <h2>位带操作（Bit-Banding）原理与演示</h2>
+            
+            <div class="bit-band-demo">
+                <h3>位带地址映射</h3>
+                <p>外设位带区：0x40000000 ~ 0x400FFFFF → 别名区：0x42000000 ~ 0x43FFFFFF</p>
+                <p>计算公式：<strong>别名地址 = 0x42000000 + (目标地址 - 0x40000000)×32 + 位号×4</strong></p>
+                
+                <div class="register">
+                    <div class="register-name">PA5位带别名地址计算</div>
+                    <div class="register-value">
+                        GPIOA_ODR地址：0x4001080C<br>
+                        偏移量：0x4001080C - 0x40000000 = 0x1080C<br>
+                        别名地址：0x42000000 + 0x1080C×32 + 5×4 = <span class="highlight">0x42210194</span>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <div class="led" id="bitband-led"></div>
+                    <button class="btn" onclick="bitbandToggle()">LED翻转 (位带操作)</button>
+                    <button class="btn" onclick="resetBitband()">重置</button>
+                </div>
+            </div>
+            
+            <h3>位带操作代码对比</h3>
+            <div class="code-block">
+<!-- 传统位运算方式 -->
+<strong>// 传统位运算方式</strong><br>
+GPIOA_ODR ^= (1UL << 5);  // 需要位运算，非原子操作<br>
+<br>
+<!-- 位带操作方式 -->
+<strong>// 位带操作方式</strong><br>
+#define BITBAND_PERIPH(addr, bit) \
+&nbsp;&nbsp;((volatile uint32_t *)(0x42000000 + ((addr - 0x40000000) << 5) + (bit << 2)))<br>
+<br>
+#define PA5_OUT (*BITBAND_PERIPH(GPIOA_ODR_ADDR, 5))<br>
+PA5_OUT = !PA5_OUT;  // 直接操作单个位，简洁且原子操作<br>
+            </div>
+            
+            <h3>位带操作优势</h3>
+            <ul>
+                <li><strong>代码简洁</strong>：无需复杂的位运算（&/|/~）</li>
+                <li><strong>原子操作</strong>：硬件保证单个位的读写不会被中断打断</li>
+                <li><strong>直观易懂</strong>：直接映射到单个引脚，符合直觉</li>
+                <li><strong>通用性强</strong>：适用于所有Cortex-M系列芯片</li>
+            </ul>
+        </div>
+        
+        <!-- 启动流程面板 -->
+        <div class="content" id="boot">
+            <h2>ARM Cortex-M 启动流程（从上电到main()）</h2>
+            
+            <div class="memory-map">
+                <div class="flash-label">Flash (0x08000000)</div>
+                <div class="ram-label">RAM (0x20000000)</div>
+                
+                <div class="memory-region text-region">
+                    .text段<br>
+                    代码/常量<br>
+                    0x08000000
+                </div>
+                
+                <div class="memory-region data-region">
+                    .data段<br>
+                    初始化变量<br>
+                    0x20000000
+                </div>
+                
+                <div class="memory-region bss-region">
+                    .bss段<br>
+                    未初始化变量<br>
+                    0x20000200
+                </div>
+            </div>
+            
+            <h3>启动流程时间线</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>1. 上电复位</h4>
+                    <p>CPU复位，硬件自动加载向量表第一个值到栈指针(SP)</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>2. 加载复位中断地址</h4>
+                    <p>从向量表第二个位置读取Reset_Handler地址并执行</p>
+                    <div class="code-block">
+DCD     __initial_sp       ; 栈顶地址<br>
+DCD     Reset_Handler      ; 复位中断服务函数<br>
+DCD     NMI_Handler        ; NMI中断<br>
+DCD     HardFault_Handler  ; 硬故障中断<br>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>3. 初始化.data段</h4>
+                    <p>将Flash中存储的初始化数据复制到RAM中的.data段</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>4. 初始化.bss段</h4>
+                    <p>将RAM中的.bss段全部清零（未初始化全局变量）</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>5. 调用系统初始化</h4>
+                    <p>执行__libc_init_array，初始化C库环境</p>
+                </div>
+                
+                <div class="timeline-item">
+                    <h4>6. 跳转到main()</h4>
+                    <p>执行用户代码，进入main函数的无限循环</p>
+                </div>
+            </div>
+            
+            <h3>各段初始化代码（汇编）</h3>
+            <div class="code-block">
+Reset_Handler:<br>
+&nbsp;&nbsp;; 1. 设置栈指针<br>
+&nbsp;&nbsp;LDR     sp, =__initial_sp<br>
+<br>
+&nbsp;&nbsp;; 2. 初始化.data段（Flash → RAM）<br>
+&nbsp;&nbsp;LDR     r0, =__data_start__<br>
+&nbsp;&nbsp;LDR     r1, =__data_end__<br>
+&nbsp;&nbsp;LDR     r2, =__data_load__<br>
+&nbsp;&nbsp;movs    r3, #0<br>
+&nbsp;&nbsp;b       LoopCopyDataInit<br>
+CopyDataInit:<br>
+&nbsp;&nbsp;ldr     r4, [r2, r3]<br>
+&nbsp;&nbsp;str     r4, [r0, r3]<br>
+&nbsp;&nbsp;adds    r3, r3, #4<br>
+LoopCopyDataInit:<br>
+&nbsp;&nbsp;cmp     r0, r1<br>
+&nbsp;&nbsp;bcc     CopyDataInit<br>
+<br>
+&nbsp;&nbsp;; 3. 初始化.bss段（清零）<br>
+&nbsp;&nbsp;LDR     r0, =__bss_start__<br>
+&nbsp;&nbsp;LDR     r1, =__bss_end__<br>
+&nbsp;&nbsp;movs    r2, #0<br>
+&nbsp;&nbsp;b       LoopFillZerobss<br>
+FillZerobss:<br>
+&nbsp;&nbsp;str     r2, [r0]<br>
+&nbsp;&nbsp;adds    r0, r0, #4<br>
+LoopFillZerobss:<br>
+&nbsp;&nbsp;cmp     r0, r1<br>
+&nbsp;&nbsp;bcc     FillZerobss<br>
+<br>
+&nbsp;&nbsp;; 4. 跳转到main()<br>
+&nbsp;&nbsp;bl      main<br>
+&nbsp;&nbsp;B       .  ; main返回后死循环<br>
+            </div>
+            
+            <h3>核心组件说明</h3>
+            <ul>
+                <li><strong>向量表（Vector Table）</strong>：存储中断服务函数地址，复位后首先读取</li>
+                <li><strong>启动文件（startup.s）</strong>：汇编编写，负责底层初始化，连接硬件和C语言</li>
+                <li><strong>分散加载文件（.sct）</strong>：定义内存布局，告诉链接器如何分配Flash/RAM</li>
+                <li><strong>.text/.data/.bss</strong>：分别存储代码、初始化变量、未初始化变量</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 标签切换功能
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有active类
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+                
+                // 添加active类到当前标签
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // GPIO演示相关
+        let gpioInitialized = false;
+        let ledState = false;
+        
+        function initGPIO() {
+            document.getElementById('rcc-value').innerHTML = '0x00000004 <span class="highlight">(GPIOA时钟已使能)</span>';
+            document.getElementById('crl-value').innerHTML = '0x44444434 <span class="highlight">(PA5配置为输出模式)</span>';
+            document.getElementById('bsrr-value').innerHTML = '0x00000000';
+            gpioInitialized = true;
+            alert('GPIO初始化完成！已使能GPIOA时钟并配置PA5为输出模式');
+        }
+        
+        function ledOn() {
+            if (!gpioInitialized) {
+                alert('请先初始化GPIO！');
+                return;
+            }
+            document.getElementById('bsrr-value').innerHTML = '0x00000020 <span class="highlight">(置位PA5)</span>';
+            document.getElementById('led').classList.add('on');
+            ledState = true;
+        }
+        
+        function ledOff() {
+            if (!gpioInitialized) {
+                alert('请先初始化GPIO！');
+                return;
+            }
+            document.getElementById('bsrr-value').innerHTML = '0x00200000 <span class="highlight">(复位PA5)</span>';
+            document.getElementById('led').classList.remove('on');
+            ledState = false;
+        }
+        
+        function resetGPIO() {
+            document.getElementById('rcc-value').innerHTML = '0x00000000 <span class="highlight">(未使能GPIOA)</span>';
+            document.getElementById('crl-value').innerHTML = '0x44444444 <span class="highlight">(默认输入模式)</span>';
+            document.getElementById('bsrr-value').innerHTML = '0x00000000';
+            document.getElementById('led').classList.remove('on');
+            gpioInitialized = false;
+            ledState = false;
+        }
+        
+        // 位带操作演示相关
+        let bitbandLedState = false;
+        
+        function bitbandToggle() {
+            bitbandLedState = !bitbandLedState;
+            const led = document.getElementById('bitband-led');
+            if (bitbandLedState) {
+                led.classList.add('on');
+                alert('PA5_OUT = 1 (位带操作：0x42210194 = 1)');
+            } else {
+                led.classList.remove('on');
+                alert('PA5_OUT = 0 (位带操作：0x42210194 = 0)');
+            }
+        }
+        
+        function resetBitband() {
+            document.getElementById('bitband-led').classList.remove('on');
+            bitbandLedState = false;
+        }
+    </script>
+</body>
+</html>
