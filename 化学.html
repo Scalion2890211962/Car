@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20个最有价值的化学方程式</title>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, #2c3e50, #4ca1af);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .category-nav {
+            background: #34495e;
+            padding: 15px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .category-nav button {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .category-nav button:hover, .category-nav button.active {
+            background: white;
+            color: #34495e;
+            border-color: white;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .equation-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #4ca1af;
+        }
+
+        .equation-card h3 {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .equation-card h3 span {
+            background: #4ca1af;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        .equation {
+            font-size: 1.2rem;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .value {
+            color: #34495e;
+            line-height: 1.6;
+        }
+
+        .value strong {
+            color: #2c3e50;
+        }
+
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 40px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .summary-table th, .summary-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .summary-table th {
+            background: #2c3e50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .summary-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .summary-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            .equation-card {
+                padding: 15px;
+            }
+            
+            .summary-table th, .summary-table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>20个最有价值的化学方程式</h1>
+            <p>涵盖基础理论、工业应用、生命活动、材料科学的核心方程式</p>
+        </header>
+
+        <div class="category-nav">
+            <button class="active" data-category="all">全部</button>
+            <button data-category="basic">基础理论与原子结构</button>
+            <button data-category="industry">工业化学与材料</button>
+            <button data-category="life">生命化学与生物过程</button>
+            <button data-category="electro">电化学与能源</button>
+            <button data-category="environment">环境化学</button>
+            <button data-category="organic">有机合成与药物</button>
+            <button data-category="analysis">分析与环境治理</button>
+            <button data-category="material">前沿材料</button>
+        </div>
+
+        <div class="content">
+            <!-- 1. 基础理论与原子结构 -->
+            <div class="equation-card" data-category="basic">
+                <h3><span>1</span>质量守恒定律的微观体现</h3>
+                <div class="equation">
+                    \(\text{2H}_2 + \text{O}_2 \xrightarrow{\text{点燃}} \text{2H}_2\text{O}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：化学反应的基石，揭示了原子重组的本质，也是氢能源的理论基础。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="basic">
+                <h3><span>2</span>核反应（质能转换）</h3>
+                <div class="equation">
+                    \(\ce{^{235}_{92}U + ^1_0n -> ^{141}_{56}Ba + ^{92}_{36}Kr + 3^1_0n + 能量}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：链式反应原理，核能利用与原子弹的理论基础，展示了质量-能量转换。
+                </div>
+            </div>
+
+            <!-- 2. 工业化学与材料 -->
+            <div class="equation-card" data-category="industry">
+                <h3><span>3</span>哈伯法合成氨（养活世界）</h3>
+                <div class="equation">
+                    \(\text{N}_2 + 3\text{H}_2 \underset{\text{高温高压}}{\stackrel{\text{催化剂}}{\rightleftharpoons}} 2\text{NH}_3\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：现代肥料工业的核心，全球约50%人口依赖此法生产的粮食，1918年诺贝尔奖成果。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="industry">
+                <h3><span>4</span>接触法制硫酸</h3>
+                <div class="equation">
+                    \(\text{2SO}_2 + \text{O}_2 \underset{\Delta}{\stackrel{\text{V}_2\text{O}_5}{\rightleftharpoons}} 2\text{SO}_3\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：化学工业的"晴雨表"，衡量国家工业水平的基础化工原料生产。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="industry">
+                <h3><span>5</span>高炉炼铁</h3>
+                <div class="equation">
+                    \(\text{Fe}_2\text{O}_3 + 3\text{CO} \xrightarrow{\text{高温}} 2\text{Fe} + 3\text{CO}_2\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：现代钢铁工业的根基，人类文明进入铁器时代后的延续。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="industry">
+                <h3><span>6</span>索尔维制碱法</h3>
+                <div class="equation">
+                    \(\text{NaCl} + \text{NH}_3 + \text{CO}_2 + \text{H}_2\text{O} \rightarrow \text{NaHCO}_3\downarrow + \text{NH}_4\text{Cl}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：基础化工原料碳酸钠的工业生产，侯氏制碱法在此基础上改良。
+                </div>
+            </div>
+
+            <!-- 3. 生命化学与生物过程 -->
+            <div class="equation-card" data-category="life">
+                <h3><span>7</span>光合作用（生命的能量来源）</h3>
+                <div class="equation">
+                    \(6\text{CO}_2 + 6\text{H}_2\text{O} \xrightarrow{\text{光能/叶绿体}} \text{C}_6\text{H}_{12}\text{O}_6 + 6\text{O}_2\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：地球几乎所有生命能量的源头，碳循环的核心，维持大气氧平衡。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="life">
+                <h3><span>8</span>有氧呼吸（能量释放）</h3>
+                <div class="equation">
+                    \(\text{C}_6\text{H}_{12}\text{O}_6 + 6\text{O}_2 \rightarrow 6\text{CO}_2 + 6\text{H}_2\text{O} + \text{能量(ATP)}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：生命活动的能量引擎，与光合作用构成完整的能量循环。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="life">
+                <h3><span>9</span>ATP水解（能量货币）</h3>
+                <div class="equation">
+                    \(\text{ATP} \rightarrow \text{ADP} + \text{P}_i + \text{能量}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：生物体内能量转移的直接载体，所有生命活动的动力来源。
+                </div>
+            </div>
+
+            <!-- 4. 电化学与能源 -->
+            <div class="equation-card" data-category="electro">
+                <h3><span>10</span>氢氧燃料电池</h3>
+                <div class="equation">
+                    \(\text{2H}_2 + \text{O}_2 \rightarrow 2\text{H}_2\text{O} \quad (\Delta G^\circ = -237.1\text{ kJ/mol})\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：清洁能源的终极形态，能量转换效率可达60-80%，零排放。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="electro">
+                <h3><span>11</span>锂离子电池充放电</h3>
+                <div class="equation">
+                    \(\text{LiCoO}_2 + \text{C}_6 \underset{\text{充电}}{\stackrel{\text{放电}}{\rightleftharpoons}} \text{Li}_{1-x}\text{CoO}_2 + \text{Li}_x\text{C}_6\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：现代便携电子设备和电动汽车的核心技术，储能革命的关键。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="electro">
+                <h3><span>12</span>电解水</h3>
+                <div class="equation">
+                    \(2\text{H}_2\text{O} \xrightarrow{\text{电解}} 2\text{H}_2\uparrow + \text{O}_2\uparrow\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：绿氢生产的核心技术，可再生能源储存的重要途径。
+                </div>
+            </div>
+
+            <!-- 5. 环境化学 -->
+            <div class="equation-card" data-category="environment">
+                <h3><span>13</span>臭氧层破坏（CFCs）</h3>
+                <div class="equation">
+                    \(\text{CF}_2\text{Cl}_2 + \text{hv} \rightarrow \text{CF}_2\text{Cl}\cdot + \text{Cl}\cdot\)<br>
+                    \(\text{Cl}\cdot + \text{O}_3 \rightarrow \text{ClO}\cdot + \text{O}_2\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：揭示了人类活动对大气层的破坏机制，推动《蒙特利尔议定书》的签署。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="environment">
+                <h3><span>14</span>光化学烟雾形成</h3>
+                <div class="equation">
+                    \(\text{NO}_2 + \text{hv} \rightarrow \text{NO} + \text{O}\cdot\)<br>
+                    \(\text{O}\cdot + \text{O}_2 \rightarrow \text{O}_3\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：解释城市空气污染机理，推动汽车尾气催化转化器的发展。
+                </div>
+            </div>
+
+            <!-- 6. 有机合成与药物 -->
+            <div class="equation-card" data-category="organic">
+                <h3><span>15</span>聚合反应（塑料时代）</h3>
+                <div class="equation">
+                    \(n\text{CH}_2=\text{CH}_2 \xrightarrow{\text{催化剂}} [\text{CH}_2-\text{CH}_2]_n\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：高分子材料时代的开端，改变了人类的生活方式。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="organic">
+                <h3><span>16</span>格氏反应</h3>
+                <div class="equation">
+                    \(\text{RMgX} + \text{R'CHO} \rightarrow \text{R}_2\text{CHOMgX} \xrightarrow{\text{H}_2\text{O}} \text{R}_2\text{CHOH}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：有机合成中最通用的C-C键形成方法，1912年诺贝尔奖，药物合成的基石。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="organic">
+                <h3><span>17</span>阿司匹林合成</h3>
+                <div class="equation">
+                    \(\text{水杨酸} + \text{乙酸酐} \xrightarrow{\text{H}^+} \text{阿司匹林} + \text{乙酸}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：百年经典药物，开启了现代药物化学，每年消耗量约4万吨。
+                </div>
+            </div>
+
+            <!-- 7. 分析与环境治理 -->
+            <div class="equation-card" data-category="analysis">
+                <h3><span>18</span>高锰酸钾滴定（氧化还原分析）</h3>
+                <div class="equation">
+                    \(\text{2MnO}_4^- + 5\text{C}_2\text{O}_4^{2-} + 16\text{H}^+ \rightarrow 2\text{Mn}^{2+} + 10\text{CO}_2 + 8\text{H}_2\text{O}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：分析化学的经典方法，氧化还原滴定的基准反应。
+                </div>
+            </div>
+
+            <div class="equation-card" data-category="analysis">
+                <h3><span>19</span>石灰石脱硫（烟气处理）</h3>
+                <div class="equation">
+                    \(\text{CaCO}_3 + \text{SO}_2 \rightarrow \text{CaSO}_3 + \text{CO}_2\)<br>
+                    \(2\text{CaSO}_3 + \text{O}_2 \rightarrow 2\text{CaSO}_4\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：火电厂脱硫的主要技术，减少酸雨污染的关键。
+                </div>
+            </div>
+
+            <!-- 8. 前沿材料 -->
+            <div class="equation-card" data-category="material">
+                <h3><span>20</span>石墨烯剥离/氧化还原</h3>
+                <div class="equation">
+                    \(\text{石墨} + \text{氧化剂} \rightarrow \text{氧化石墨} \xrightarrow{\text{还原剂}} \text{石墨烯}\)
+                </div>
+                <div class="value">
+                    <strong>价值</strong>：二维材料时代的开启，2010年诺贝尔奖，纳米科技的里程碑。
+                </div>
+            </div>
+
+            <!-- 价值维度总结表 -->
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th>维度</th>
+                        <th>代表方程式</th>
+                        <th>影响</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>生存基础</td>
+                        <td>光合作用、合成氨</td>
+                        <td>维持生命与粮食安全</td>
+                    </tr>
+                    <tr>
+                        <td>能源变革</td>
+                        <td>燃料电池、锂离子电池</td>
+                        <td>推动清洁能源转型</td>
+                    </tr>
+                    <tr>
+                        <td>工业文明</td>
+                        <td>炼铁、制碱、制硫酸</td>
+                        <td>现代制造业根基</td>
+                    </tr>
+                    <tr>
+                        <td>生命机制</td>
+                        <td>呼吸作用、ATP循环</td>
+                        <td>理解生命本质</td>
+                    </tr>
+                    <tr>
+                        <td>环境保护</td>
+                        <td>臭氧破坏、烟气脱硫</td>
+                        <td>修复人类对自然的伤害</td>
+                    </tr>
+                    <tr>
+                        <td>材料革命</td>
+                        <td>聚合反应、石墨烯</td>
+                        <td>改变生活方式</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // 初始化MathJax
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']],
+                processEscapes: true,
+                packages: {'[+]': ['mhchem']}
+            },
+            loader: {
+                load: ['[tex]/mhchem']
+            }
+        };
+
+        // 分类筛选功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryButtons = document.querySelectorAll('.category-nav button');
+            const equationCards = document.querySelectorAll('.equation-card');
+
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    // 给当前按钮添加active类
+                    this.classList.add('active');
+
+                    const targetCategory = this.getAttribute('data-category');
+
+                    // 筛选卡片
+                    equationCards.forEach(card => {
+                        const cardCategory = card.getAttribute('data-category');
+                        if (targetCategory === 'all' || cardCategory === targetCategory) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    // 重新渲染MathJax
+                    MathJax.typesetPromise();
+                });
+            });
+
+            // 初始渲染
+            MathJax.typesetPromise();
+        });
+    </script>
+</body>
+</html>
