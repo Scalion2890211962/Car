@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高斯-博内定理可视化 | Gauss-Bonnet Theorem Visualization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050505;
+            color: #e0e0e0;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .ui-layer {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none; /* Let clicks pass through to canvas */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 2rem;
+            box-sizing: border-box;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .math-display {
+            font-family: 'Playfair Display', serif;
+            text-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+        }
+
+        .glass-panel {
+            background: rgba(20, 20, 25, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            pointer-events: auto;
+            transition: all 0.3s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(100, 200, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 100, 255, 0.1);
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .control-btn:hover, .control-btn.active {
+            background: rgba(100, 200, 255, 0.2);
+            border-color: rgba(100, 200, 255, 0.5);
+            color: #aaddff;
+        }
+
+        .slider-container input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        
+        .slider-container input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #aaddff;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(170, 221, 255, 0.5);
+        }
+
+        .slider-container input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+        }
+
+        .highlight-text {
+            background: linear-gradient(120deg, rgba(100,200,255,0) 0%, rgba(100,200,255,0.2) 100%);
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
+        /* Scanline effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.1));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background 3D Canvas -->
+    <div id="canvas-container"></div>
+    <div class="scanlines"></div>
+
+    <!-- UI Overlay -->
+    <div class="ui-layer">
+        <!-- Header -->
+        <header class="flex justify-between items-start">
+            <div class="glass-panel p-6 max-w-md animate-fade-in-down">
+                <h1 class="text-3xl font-bold mb-2 text-white tracking-wider">高斯-博内定理</h1>
+                <h2 class="text-sm text-blue-300 uppercase tracking-widest mb-4">Gauss-Bonnet Theorem</h2>
+                <div class="math-display text-2xl text-center py-4 border-t border-b border-white/10 my-2">
+                    ∫<sub class="text-sm">M</sub> K dA = 2π χ(M)
+                </div>
+                <p class="text-sm text-gray-300 leading-relaxed text-justify">
+                    该定理揭示了<span class="highlight-text">局部微分几何</span>（曲率 K）与<span class="highlight-text">整体拓扑</span>（欧拉示性数 χ）之间的深刻联系。
+                    <br><br>
+                    无论曲面如何连续变形（只要不撕裂或粘合），其总曲率保持不变。
+                </p>
+            </div>
+            
+            <div class="glass-panel p-4 text-right hidden md:block">
+                <div class="text-xs text-gray-400 uppercase tracking-widest mb-1">Current Surface</div>
+                <div id="surface-name" class="text-xl font-serif text-blue-200">Torus (环面)</div>
+                <div class="text-xs text-gray-500 mt-1">Euler Characteristic: <span id="euler-val" class="text-white font-mono">0</span></div>
+            </div>
+        </header>
+
+        <!-- Middle Section (Dynamic Explanation) -->
+        <div class="flex-grow flex items-center justify-end pr-4 pointer-events-none">
+            <div id="info-card" class="glass-panel p-5 w-80 transform translate-x-0 transition-transform duration-500 opacity-90">
+                <h3 class="text-lg font-bold text-blue-200 mb-2 border-b border-white/10 pb-2">几何解析</h3>
+                <div id="dynamic-text" class="text-sm text-gray-300 space-y-2">
+                    <p>正在计算高斯曲率分布...</p>
+                    <div class="w-full bg-gray-800 h-1 mt-2 rounded overflow-hidden">
+                        <div class="h-full bg-blue-500 w-1/2 animate-pulse"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Controls -->
+        <footer class="flex justify-center items-end pb-6">
+            <div class="glass-panel p-4 flex flex-col md:flex-row gap-6 items-center">
+                
+                <!-- Shape Selectors -->
+                <div class="flex gap-2">
+                    <button class="control-btn active" onclick="setShape('torus')">环面 (Torus)</button>
+                    <button class="control-btn" onclick="setShape('sphere')">球面 (Sphere)</button>
+                    <button class="control-btn" onclick="setShape('genus2')">双环面 (Genus 2)</button>
+                    <button class="control-btn" onclick="setShape('plane')">双曲 (Hyperbolic)</button>
+                </div>
+
+                <div class="h-8 w-px bg-white/10 hidden md:block"></div>
+
+                <!-- Sliders -->
+                <div class="flex gap-4 text-xs">
+                    <div class="slider-container w-32">
+                        <label class="block text-gray-400 mb-1 flex justify-between">
+                            <span>形变 (Deform)</span>
+                        </label>
+                        <input type="range" min="0" max="1" step="0.01" value="0" id="deform-slider">
+                    </div>
+                    <div class="slider-container w-32">
+                        <label class="block text-gray-400 mb-1">旋转速度</label>
+                        <input type="range" min="0" max="2" step="0.1" value="0.5" id="speed-slider">
+                    </div>
+                </div>
+
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- Three.js Setup ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x050505, 0.03);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 18);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.enableZoom = true;
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0x404040, 2);
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1.5);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+        
+        const pointLight2 = new THREE.PointLight(0x4455ff, 1);
+        pointLight2.position.set(-10, -10, 5);
+        scene.add(pointLight2);
+
+        // --- Shader Material for Curvature Visualization ---
+        // We use a custom shader to color the surface based on local curvature logic
+        // or simply normal-based coloring to look "mathy". 
+        // For this demo, we will use a highly reflective physical material combined with vertex coloring logic if needed,
+        // but a custom shader gives the best "Scientific Visualization" look.
+
+        const curvatureShaderMaterial = new THREE.ShaderMaterial({
+            uniforms: {
+                uTime: { value: 0 },
+                uColor1: { value: new THREE.Color(0x00ffff) }, // Cyan (Positive)
+                uColor2: { value: new THREE.Color(0xff0055) }, // Red (Negative)
+                uColor3: { value: new THREE.Color(0x222222) }  // Dark (Flat)
+            },
+            vertexShader: `
+                varying vec2 vUv;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                varying float vCurvature;
+
+                void main() {
+                    vUv = uv;
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = position;
+                    
+                    // Simple approximation of curvature for visual effect
+                    // In a real math app, we'd calculate the Laplacian or Gaussian curvature here
+                    // Here we use position to fake "hills" and "valleys" for the Torus
+                    float curve = normal.x * normal.x; 
+                    
+                    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                }
+            `,
+            fragmentShader: `
+                uniform vec3 uColor1;
+                uniform vec3 uColor2;
+                uniform vec3 uColor3;
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+
+                void main() {
+                    // Fresnel effect
+                    vec3 viewDir = normalize(cameraPosition - vPosition);
+                    float fresnel = pow(1.0 - dot(viewDir, vNormal), 3.0);
+                    
+                    // Fake curvature visualization based on normal direction
+                    // This is purely artistic to represent "bending"
+                    float blend = vNormal.y * 0.5 + 0.5;
+                    
+                    vec3 color = mix(uColor2, uColor1, blend);
+                    color = mix(color, uColor3, fresnel * 0.5);
+
+                    // Grid lines effect
+                    float grid = step(0.98, fract(vPosition.x * 2.0)) + step(0.98, fract(vPosition.y * 2.0));
+                    color += vec3(grid * 0.2);
+
+                    gl_FragColor = vec4(color, 0.9);
+                }
+            `,
+            wireframe: false,
+            transparent: true,
+            side: THREE.DoubleSide
+        });
+
+        // --- Geometries & Math Logic ---
+
+        let currentMesh = null;
+        let wireframeMesh = null;
+        let currentShapeType = 'torus';
+        let time = 0;
+        let rotationSpeed = 0.5;
+
+        // Helper to create wireframe overlay
+        function createWireframe(geometry) {
+            const wireGeo = new THREE.WireframeGeometry(geometry);
+            const wireMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05 });
+            return new THREE.LineSegments(wireGeo, wireMat);
+        }
+
+        function updateInfoCard(title, desc, euler) {
+            document.getElementById('surface-name').innerText = title;
+            document.getElementById('euler-val').innerText = euler;
+            const textDiv = document.getElementById('dynamic-text');
+            textDiv.innerHTML = `<p>${desc}</p><div class="mt-2 text-xs text-gray-500">Euler Characteristic (χ) = ${euler}</div>`;
+        }
+
+        function setShape(type) {
+            if (currentMesh) {
+                scene.remove(currentMesh);
+                scene.remove(wireframeMesh);
+                currentMesh.geometry.dispose();
+            }
+            
+            currentShapeType = type;
+            let geometry;
+            let title, desc, euler;
+
+            // Update Buttons
+            document.querySelectorAll('.control-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            switch(type) {
+                case 'torus':
+                    // Torus: Euler = 0. Total Curvature = 0.
+                    // Has regions of positive (outside) and negative (inside) curvature that cancel out.
+                    geometry = new THREE.TorusGeometry(4, 1.5, 64, 100);
+                    title = "环面 (Torus)";
+                    euler = "0";
+                    desc = "环面的欧拉示性数为 <strong>0</strong>。它同时具有正曲率（外圈）和负曲率（内圈）区域。根据高斯-博内定理，总曲率积分 ∫K dA = 2π * 0 = <strong>0</strong>。正负曲率相互抵消。";
+                    break;
+                case 'sphere':
+                    // Sphere: Euler = 2. Total Curvature = 4pi.
+                    geometry = new THREE.SphereGeometry(4, 64, 64);
+                    title = "球面 (Sphere)";
+                    euler = "2";
+                    desc = "球面的欧拉示性数为 <strong>2</strong>。球面上每一点的曲率都是正的（常数）。总曲率 ∫K dA = 4π，等于 2π * 2。这是最简单的闭曲面。";
+                    break;
+                case 'genus2':
+                    // Double Torus: Euler = -2.
+                    // We approximate this by merging two torus geometries or using a parametric surface
+                    // For simplicity in Three.js without external loaders, we use a highly deformed TorusKnot or similar
+                    // Actually, let's use a TorusKnot with specific parameters to look like a genus 2 surface
+                    // Or better, just scale a TorusKnot(2, 3) which looks like a double torus
+                    geometry = new THREE.TorusKnotGeometry(3, 0.8, 128, 32, 2, 3); 
+                    title = "双环面 (Genus 2)";
+                    euler = "-2";
+                    desc = "具有两个洞的曲面（亏格 g=2）。其欧拉示性数 χ = 2 - 2g = <strong>-2</strong>。总曲率必须为负值 (-4π)。这意味着负曲率区域占主导地位。";
+                    break;
+                case 'plane':
+                    // Pseudosphere or Hyperbolic paraboloid approximation
+                    // Let's use a Parametric Geometry for a saddle/hyperbolic look
+                    geometry = new THREE.ParametricGeometry((u, v, target) => {
+                        u = (u - 0.5) * 10;
+                        v = (v - 0.5) * 10;
+                        const x = u;
+                        const z = v;
+                        const y = (u*u - v*v) * 0.1; // Saddle
+                        target.set(x, y, z);
+                    }, 50, 50);
+                    title = "双曲抛物面 (Hyperbolic)";
+                    euler = "0 (Open)";
+                    desc = "马鞍面具有负高斯曲率。虽然它是开放的（非紧致），但它展示了局部负曲率的特性。在双曲几何中，三角形内角和小于180度。";
+                    break;
+            }
+
+            // Create Mesh
+            currentMesh = new THREE.Mesh(geometry, curvatureShaderMaterial);
+            wireframeMesh = createWireframe(geometry);
+            
+            scene.add(currentMesh);
+            scene.add(wireframeMesh);
+
+            updateInfoCard(title, desc, euler);
+        }
+
+        // --- Animation Loop ---
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            time += 0.01;
+            
+            // Rotation
+            if (currentMesh) {
+                currentMesh.rotation.y += 0.005 * rotationSpeed;
+                currentMesh.rotation.x = Math.sin(time * 0.2) * 0.1; // Gentle bobbing
+                
+                wireframeMesh.rotation.copy(currentMesh.rotation);
+                wireframeMesh.position.copy(currentMesh.position);
+            }
+
+            // Deformation Logic (Vertex manipulation)
+            const deformAmount = parseFloat(document.getElementById('deform-slider').value);
+            if (currentMesh && currentShapeType !== 'plane') {
+                // Simple vertex pulse effect to show "continuity"
+                // Note: Modifying geometry vertices every frame is expensive, 
+                // so we keep it subtle or use shaders. Here we just rotate for performance.
+                // But let's try a scale effect for "Deform"
+                const scale = 1 + Math.sin(time * 2) * 0.05 * deformAmount;
+                currentMesh.scale.set(scale, scale, scale);
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // --- Event Listeners ---
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        document.getElementById('speed-slider').addEventListener('input', (e) => {
+            rotationSpeed = parseFloat(e.target.value);
+        });
+
+        // Initialize
+        setShape('torus'); // Default
+        animate();
+
+        // Add a particle system for "Space" feel
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1500;
+        const posArray = new Float32Array(particlesCount * 3);
+        
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 50;
+        }
+        
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.05,
+            color: 0x4444ff,
+            transparent: true,
+            opacity: 0.4
+        });
+        
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        // Animate particles slowly
+        function animateParticles() {
+            particlesMesh.rotation.y += 0.0005;
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+    </script>
+</body>
+</html>
