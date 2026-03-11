@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算机网络核心知识 | 精简版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        .section {
+            margin-bottom: 25px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .section-title {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-content {
+            padding: 20px;
+            display: block;
+        }
+        .section-content ul {
+            padding-left: 25px;
+            margin-top: 10px;
+        }
+        .section-content li {
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .tag {
+            display: inline-block;
+            background-color: #f1c40f;
+            color: #2c3e50;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+        .compare {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .compare-item {
+            flex: 1;
+            min-width: 200px;
+            background: #ecf0f1;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .compare-item h4 {
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>计算机网络核心知识（精简版）</h1>
+
+        <!-- 网络分层模型 -->
+        <div class="section">
+            <div class="section-title">
+                一、五层网络模型 <span>▼</span>
+            </div>
+            <div class="section-content">
+                <ul>
+                    <li><span class="highlight">应用层</span>：HTTP、FTP、DNS、SMTP <span class="tag">核心</span></li>
+                    <li><span class="highlight">传输层</span>：TCP、UDP、端口号</li>
+                    <li><span class="highlight">网络层</span>：IP、ARP、路由、路由器</li>
+                    <li><span class="highlight">数据链路层</span>：MAC地址、以太网、交换机</li>
+                    <li><span class="highlight">物理层</span>：电压、光纤、无线电、接口</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TCP vs UDP -->
+        <div class="section">
+            <div class="section-title">
+                二、TCP & UDP 对比 <span>▼</span>
+            </div>
+            <div class="section-content">
+                <div class="compare">
+                    <div class="compare-item">
+                        <h4>TCP</h4>
+                        <ul>
+                            <li>可靠传输</li>
+                            <li>面向连接</li>
+                            <li>速度慢、有重传</li>
+                            <li>流量控制/拥塞控制</li>
+                            <li>场景：网页、文件、邮件</li>
+                        </ul>
+                    </div>
+                    <div class="compare-item">
+                        <h4>UDP</h4>
+                        <ul>
+                            <li>不可靠传输</li>
+                            <li>无连接</li>
+                            <li>速度快、无重传</li>
+                            <li>开销小、实时性高</li>
+                            <li>场景：直播、游戏、视频通话</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IP与MAC地址 -->
+        <div class="section">
+            <div class="section-title">
+                三、IP & MAC 地址 <span>▼</span>
+            </div>
+            <div class="section-content">
+                <ul>
+                    <li><span class="highlight">IPv4</span>：32位，点分十进制（如192.168.1.1）</li>
+                    <li><span class="highlight">IPv6</span>：128位，解决地址耗尽问题</li>
+                    <li><span class="highlight">私网IP</span>：192.168.x.x、10.x.x.x、172.16-31.x.x</li>
+                    <li><span class="highlight">MAC地址</span>：48位物理地址，出厂固定，ARP协议通过IP找MAC</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 常用协议与端口 -->
+        <div class="section">
+            <div class="section-title">
+                四、常用协议&端口 <span>▼</span>
+            </div>
+            <div class="section-content">
+                <ul>
+                    <li>HTTP：80 <span class="tag">高频</span></li>
+                    <li>HTTPS：443 <span class="tag">高频</span></li>
+                    <li>FTP：21</li>
+                    <li>DNS：53</li>
+                    <li>SMTP：25 | POP3：110</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 网络设备 -->
+        <div class="section">
+            <div class="section-title">
+                五、核心网络设备 <span>▼</span>
+            </div>
+            <div class="section-content">
+                <ul>
+                    <li><span class="highlight">集线器</span>：物理层，广播传输，半双工</li>
+                    <li><span class="highlight">交换机</span>：数据链路层，基于MAC地址转发</li>
+                    <li><span class="highlight">路由器</span>：网络层，基于IP地址转发，连接不同网段</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 网络分类 -->
+        <div class="section">
+            <div class="section-title">
+                六、网络分类（按覆盖范围） <span>▼</span>
+            </div>
+            <div class="section-content">
+                <ul>
+                    <li><span class="highlight">LAN 局域网</span>：家庭、公司、校园（小范围）</li>
+                    <li><span class="highlight">MAN 城域网</span>：城市级别</li>
+                    <li><span class="highlight">WAN 广域网</span>：跨地域、互联网</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 核心概念 -->
+        <div class="section">
+            <div class="section-title">
+                七、关键核心概念 <span>▼</span>
+            </div>
+            <div class="section-content">
+                <ul>
+                    <li><span class="highlight">HTTP/HTTPS</span>：HTTP明文不安全，HTTPS（SSL/TLS加密）安全</li>
+                    <li><span class="highlight">DNS</span>：域名解析为IP地址</li>
+                    <li><span class="highlight">NAT</span>：内网IP与公网IP转换</li>
+                    <li><span class="highlight">DHCP</span>：自动分配IP地址</li>
+                    <li><span class="highlight">子网掩码</span>：区分网络位和主机位</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 折叠面板交互
+        const sectionTitles = document.querySelectorAll('.section-title');
+        sectionTitles.forEach(title => {
+            title.addEventListener('click', () => {
+                const content = title.nextElementSibling;
+                const icon = title.querySelector('span');
+                if (content.style.display === 'none') {
+                    content.style.display = 'block';
+                    icon.textContent = '▼';
+                } else {
+                    content.style.display = 'none';
+                    icon.textContent = '▶';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
