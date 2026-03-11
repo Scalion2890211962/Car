@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导数 - 变化率可视化动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .desc {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        #canvas-container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            border: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .info-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .info-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .info-panel p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>导数 - 变化率（斜率）可视化</h1>
+        <div class="desc">拖动红点查看函数在不同点的导数（切线斜率），直观理解"瞬间变化率"</div>
+        
+        <div id="canvas-container">
+            <canvas id="derivativeCanvas" width="1000" height="500"></canvas>
+        </div>
+        
+        <div class="controls">
+            <button id="playBtn">开始动画</button>
+            <button id="pauseBtn">暂停</button>
+            <button id="resetBtn">重置</button>
+        </div>
+        
+        <div class="info-panel">
+            <h3>核心知识点解读</h3>
+            <p>1. 导数的几何意义：<span class="highlight">曲线在某点的切线斜率</span>（图中红色直线为切线，斜率就是该点导数）</p>
+            <p>2. 变化率含义：正数斜率（导数>0）→ 函数递增（如路程增加→速度为正）；负数斜率（导数<0）→ 函数递减</p>
+            <p>3. 极值点：导数=0的点（图中切线水平），对应函数的最大值/最小值（如利润最高、用料最省）</p>
+            <p>4. 物理意义：路程的导数=速度，速度的导数=加速度（本质都是"瞬间变化快慢"）</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取画布和上下文
+        const canvas = document.getElementById('derivativeCanvas');
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+
+        // 坐标系参数
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const scale = 50; // 像素/单位
+        let x = -5; // 初始x坐标
+        let animationId = null;
+        let isPlaying = false;
+
+        // 绘制坐标系
+        function drawAxis() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 1;
+
+            // 绘制x轴
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(width, centerY);
+            ctx.stroke();
+
+            // 绘制y轴
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, height);
+            ctx.stroke();
+
+            // 绘制刻度
+            ctx.fillStyle = '#999';
+            ctx.font = '10px Arial';
+            for (let i = -8; i <= 8; i++) {
+                if (i === 0) continue;
+                // x轴刻度
+                ctx.fillText(i, centerX + i * scale, centerY + 15);
+                ctx.beginPath();
+                ctx.moveTo(centerX + i * scale, centerY - 5);
+                ctx.lineTo(centerX + i * scale, centerY + 5);
+                ctx.stroke();
+
+                // y轴刻度
+                ctx.fillText(i, centerX - 15, centerY - i * scale);
+                ctx.beginPath();
+                ctx.moveTo(centerX - 5, centerY - i * scale);
+                ctx.lineTo(centerX + 5, centerY - i * scale);
+                ctx.stroke();
+            }
+        }
+
+        // 定义函数 y = x² - 4（二次函数，方便展示极值）
+        function f(x) {
+            return x * x - 4;
+        }
+
+        // 求导数 f’(x) = 2x
+        function df(x) {
+            return 2 * x;
+        }
+
+        // 绘制函数曲线
+        function drawFunction() {
+            ctx.strokeStyle = '#3498db';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let t = -8; t <= 8; t += 0.01) {
+                const px = centerX + t * scale;
+                const py = centerY - f(t) * scale;
+                if (t === -8) {
+                    ctx.moveTo(px, py);
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.stroke();
+        }
+
+        // 绘制切线（导数的几何表示）
+        function drawTangent(x) {
+            const y = f(x);
+            const slope = df(x); // 导数=斜率
+            
+            // 切点
+            const px = centerX + x * scale;
+            const py = centerY - y * scale;
+
+            // 绘制切点红点
+            ctx.fillStyle = '#e74c3c';
+            ctx.beginPath();
+            ctx.arc(px, py, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 绘制切线（取左右各2个单位长度）
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const x1 = x - 2;
+            const y1 = y + slope * (x1 - x);
+            const px1 = centerX + x1 * scale;
+            const py1 = centerY - y1 * scale;
+
+            const x2 = x + 2;
+            const y2 = y + slope * (x2 - x);
+            const px2 = centerX + x2 * scale;
+            const py2 = centerY - y2 * scale;
+
+            ctx.moveTo(px1, py1);
+            ctx.lineTo(px2, py2);
+            ctx.stroke();
+
+            // 显示导数数值
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '14px Arial';
+            ctx.fillText(`导数(f'(${x.toFixed(1)})) = ${slope.toFixed(1)}`, px + 10, py - 10);
+            
+            // 显示变化率说明
+            let rateDesc = '';
+            if (slope > 0.1) rateDesc = '递增（变化率为正）';
+            else if (slope < -0.1) rateDesc = '递减（变化率为负）';
+            else rateDesc = '极值点（变化率=0）';
+            ctx.fillText(rateDesc, px + 10, py + 15);
+        }
+
+        // 动画主函数
+        function animate() {
+            drawAxis();
+            drawFunction();
+            drawTangent(x);
+            
+            // 移动x坐标（模拟"瞬间"变化）
+            x += 0.05;
+            if (x > 5) x = -5;
+            
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // 控制按钮事件
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (!isPlaying) {
+                isPlaying = true;
+                animate();
+            }
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            isPlaying = false;
+            cancelAnimationFrame(animationId);
+            x = -5;
+            drawAxis();
+            drawFunction();
+            drawTangent(x);
+        });
+
+        // 鼠标交互：点击/拖动查看任意点的导数
+        canvas.addEventListener('mousemove', (e) => {
+            if (e.buttons === 1) { // 按住鼠标左键拖动
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                x = (mouseX - centerX) / scale;
+                drawAxis();
+                drawFunction();
+                drawTangent(x);
+            }
+        });
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            x = (mouseX - centerX) / scale;
+            drawAxis();
+            drawFunction();
+            drawTangent(x);
+        });
+
+        // 初始化绘制
+        drawAxis();
+        drawFunction();
+        drawTangent(x);
+    </script>
+</body>
+</html>
